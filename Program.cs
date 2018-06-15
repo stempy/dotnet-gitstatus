@@ -106,17 +106,18 @@ namespace dotnet_gitstatus
 
             var topLevelPad = maxLevel+5;
             var branchPad = branchMaxLevel+2;
-            
-            var colorWriter = new ConsoleColorWriter();
 
-            colorWriter.WriteLine($"Repo{"".PadRight(topLevelPad-4)}Branch{"".PadRight(branchPad-6)}Hash{"".PadRight(10-4)}Remote",ConsoleColor.Blue)
-                       .WriteLine(new string('=',160),ConsoleColor.Cyan);
-
-
+            var remotePad = 0;
             var repoNameColor = ConsoleColor.DarkGreen;
             var branchColor = ConsoleColor.DarkGray;
             var hashColor = ConsoleColor.DarkMagenta;
             var remoteColor = ConsoleColor.DarkBlue;
+
+            var remotePadStr=new string(' ',remotePad);
+
+            var colorWriter = new ConsoleColorWriter();
+            colorWriter.WriteLine($"Repo{"".PadRight(topLevelPad-4)}Branch{"".PadRight(branchPad-6)}Hash{"".PadRight(10-4)}Remote",ConsoleColor.Blue)
+                       .WriteLine(new string('=',160),ConsoleColor.Cyan);
 
             foreach(var l in g){
                 var line = $"{l.TopLevel.PadRight(topLevelPad)}{l.Branch.PadRight(branchPad)}{l.Hash.PadRight(10)}{l.Remote}";
