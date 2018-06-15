@@ -30,14 +30,15 @@ namespace dotnet_gitstatus
             var branch = Exec("git","rev-parse --abbrev-ref HEAD").Trim();
             var remote = Exec("git","config --get remote.origin.url").Trim();
             var topLevel = Exec("git","rev-parse --show-toplevel").Trim();
-            //var hash = Exec("git","log --pretty=format:%H -n 1").Trim();
+            var fullhash = Exec("git","log --pretty=format:%H -n 1").Trim();
             var hash = Exec("git","rev-parse --short HEAD").Trim();
 
             var o = new GitInfo {
                 Branch = branch,
                 Remote = remote,
                 TopLevel = Path.GetFileName(topLevel),
-                Hash = hash
+                Hash = hash,
+                FullHash = fullhash
             };
             return o;
         }
@@ -76,6 +77,7 @@ namespace dotnet_gitstatus
             public string Branch {get; set;}
             public string Remote {get; set;}
             public string TopLevel {get; set;}
+            public string FullHash {get; set;}
             public string Hash {get; set;}
         }
 
@@ -92,8 +94,11 @@ namespace dotnet_gitstatus
                 if (a.Branch.Length>30){
                     a.Branch=a.Branch.Substring(0,27) + "...";
                 }
+
+                if (a.Remote.Contains(".visualstudio.com")){
+                    a.Remote = $"{a.Remote}/commit/{a.FullHash}";
+                }
             }
-            
             
             var topLevelLengths = g.Select(x=>x.TopLevel.Length);
             var maxLevel=topLevelLengths.OrderByDescending(x=>x).FirstOrDefault();
@@ -101,15 +106,68 @@ namespace dotnet_gitstatus
 
             var topLevelPad = maxLevel+5;
             var branchPad = branchMaxLevel+2;
+            
+            var colorWriter = new ConsoleColorWriter();
 
-            Console.WriteLine($"Repo{"".PadRight(topLevelPad-4)}Branch{"".PadRight(branchPad-6)}Hash{"".PadRight(15-4)}Remote");
-            Console.WriteLine(new string('=',160));
+            colorWriter.WriteLine($"Repo{"".PadRight(topLevelPad-4)}Branch{"".PadRight(branchPad-6)}Hash{"".PadRight(10-4)}Remote",ConsoleColor.Blue)
+                       .WriteLine(new string('=',160),ConsoleColor.Cyan);
+
+
+            var repoNameColor = ConsoleColor.DarkGreen;
+            var branchColor = ConsoleColor.DarkGray;
+            var hashColor = ConsoleColor.DarkMagenta;
+            var remoteColor = ConsoleColor.DarkBlue;
+
             foreach(var l in g){
-                var line = $"{l.TopLevel.PadRight(topLevelPad)}{l.Branch.PadRight(branchPad)}{l.Hash.PadRight(15)}{l.Remote}";
-                Console.WriteLine(line);
+                var line = $"{l.TopLevel.PadRight(topLevelPad)}{l.Branch.PadRight(branchPad)}{l.Hash.PadRight(10)}{l.Remote}";
+                
+                colorWriter.Write($"{l.TopLevel.PadRight(topLevelPad)}",repoNameColor)
+                           .Write($"{l.Branch.PadRight(branchPad)}",branchColor)
+                           .Write($"{l.Hash.PadRight(10)}",hashColor)
+                           .Write($"{l.Remote}\n",remoteColor);
             }
-            
-            
+        }
+    }
+
+    public class ConsoleColorWriter
+    {
+        public void Write(ConsoleColor color, string message){
+            var prevFgColor = Console.ForegroundColor;
+            Console.ForegroundColor = color;
+            Console.Write(message);
+            Console.ForegroundColor = prevFgColor;
+        }
+
+        public void WriteLine(ConsoleColor color, string message){
+            var prevFgColor = Console.ForegroundColor;
+            Console.ForegroundColor = color;
+            Console.WriteLine(message);
+            Console.ForegroundColor = prevFgColor;
+        }
+
+        public void Write(string message){
+            Console.Write(message);
+        }
+    }
+
+    public static class ConsoleWriterExtensions
+    {
+        public static ConsoleColorWriter Write(this ConsoleColorWriter writer, string message, ConsoleColor color){
+            writer.Write(color,message);
+            return writer;
+        }
+        public static ConsoleColorWriter WriteLine(this ConsoleColorWriter writer, string message, ConsoleColor color){
+            writer.WriteLine(color,message);
+            return writer;
+        }
+        public static ConsoleColorWriter WriteLine(this ConsoleColorWriter writer, string message){
+            writer.WriteLine(message);
+            return writer;
+        }
+
+         public static ConsoleColorWriter Write(this ConsoleColorWriter writer, string message){
+            writer.Write(message);
+            return writer;
         }
     }
 }
