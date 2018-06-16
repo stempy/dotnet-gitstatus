@@ -6,6 +6,7 @@
     <PackAsTool>true</PackAsTool>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <RootNamespace>dotnet_gitstatus</RootNamespace>
+    <Version>0.5.0</Version>
   </PropertyGroup>
 
 </Project>
