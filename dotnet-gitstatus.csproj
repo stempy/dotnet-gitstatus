@@ -6,7 +6,7 @@
     <PackAsTool>true</PackAsTool>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <RootNamespace>dotnet_gitstatus</RootNamespace>
-    <Version>0.5.1</Version>
+    <Version>0.5.2</Version>
     <Description>GitStatus for multiple repositories</Description>
     <PackageProjectUrl>https://github.com/stempy/dotnet-gitstatus</PackageProjectUrl>
     <RepositoryUrl>https://github.com/stempy/dotnet-gitstatus</RepositoryUrl>
