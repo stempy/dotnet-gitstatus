@@ -7,6 +7,7 @@ namespace dotnet_gitstatus
     {
         public GitInfo ProcessPath(string path)
         {
+            var oldDir = Directory.GetCurrentDirectory();
             Directory.SetCurrentDirectory(path);
             var simpleExec = new SimpleExec();
 
@@ -24,6 +25,7 @@ namespace dotnet_gitstatus
                 Hash = hash,
                 FullHash = fullhash
             };
+            Directory.SetCurrentDirectory(oldDir);
             return o;
         }
 
@@ -38,7 +40,11 @@ namespace dotnet_gitstatus
                 }
                 if (remote.Contains("github.com"))
                 {
-                    newRemote = $"{remote.Remove(remote.IndexOf(".git"))}/commit/{fullHash}";
+                    var gitIdx = remote.IndexOf(".git");
+                    if (gitIdx!=-1){
+                        remote = remote.Remove(gitIdx);
+                    }
+                    newRemote = $"{remote}/commit/{fullHash}";
                 }
                 if (remote.Contains("bitbucket.org"))
                 {

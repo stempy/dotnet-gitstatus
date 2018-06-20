@@ -18,18 +18,24 @@ namespace dotnet_gitstatus
                 var oldDir = Directory.GetCurrentDirectory();
                 
                 var pathSpec = args[0];
-                var filePattern = args.Length>1? args[1]:"*";
-                var lastPartOfPath = Path.GetFileName(pathSpec);
+                var absPath = Path.GetFullPath(pathSpec);
+
+                var dirPattern = args.Length>1? args[1]:"*";
+                var lastPartOfPath = Path.GetFileName(absPath);
                 if (lastPartOfPath.Contains("*")|| lastPartOfPath.Contains("?")){
-                    pathSpec = Path.GetDirectoryName(pathSpec);
-                    filePattern = lastPartOfPath;
+                    absPath = Path.GetDirectoryName(absPath);
+                    dirPattern = lastPartOfPath;
                 }
                 
-                var dirs = Directory.GetDirectories(pathSpec,filePattern);
+                // get all .git dirs, folder above is path to use
+                var dirs = Directory.GetDirectories(absPath,dirPattern);
+
                 var items = new List<GitInfo>();
-                foreach(var d in dirs){
-                    if (Directory.Exists(Path.Combine(d,".git"))){
-                        var gi= gitReader.ProcessPath(d);
+                foreach(var dir in dirs){
+                    var gitPath = Path.Combine(dir,".git");
+                    if (Directory.Exists(gitPath))
+                    {
+                        var gi= gitReader.ProcessPath(dir);
                         items.Add(gi);
                     }
                 }
