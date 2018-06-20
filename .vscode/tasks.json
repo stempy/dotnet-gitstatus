@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/dotnet-gitrepostatus.csproj"
+                "${workspaceFolder}/dotnet-gitstatus.csproj"
             ],
             "problemMatcher": "$msCompile"
         }
